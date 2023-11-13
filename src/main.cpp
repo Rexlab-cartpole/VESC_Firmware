@@ -2,8 +2,8 @@
 #include <board_vesc_4_12.h>
 #include <SimpleFOC.h>
 
-#define MOTOR_PENDULUM 1
-// #define MOTOR_RAIL 1
+// #define MOTOR_PENDULUM 1
+#define MOTOR_RAIL 1
 
 #ifdef MOTOR_RAIL
   #define CPR_ENCODER 540
@@ -18,7 +18,7 @@
 #define MOTOR_R 0.340
 #define MOTOR_L 0.000216
 
-#define MAX_TORQUE 10
+#define MAX_TORQUE 5
 #define MIN_DUTY_PERIOD_PWM 0
 #define MAX_DUTY_PERIOD_PWM 1000
 
@@ -27,7 +27,7 @@
 
 #define INPUT_VOLTAGE 24
 #define CALIBRATION_VOLTAGE 1
-#define MAX_RAD_PER_SEC 100
+#define MAX_RAD_PER_SEC 1000
 
 #define LOW_PASS_CONSTANT 0.1
 
@@ -37,6 +37,7 @@
 Encoder sensor = Encoder(ENC_A, ENC_B, CPR_ENCODER);
 HardwareSerial Serial6(USART6_RX, USART6_TX);
 BLDCMotor motor = BLDCMotor(MOTOR_POLES, MOTOR_R, MOTOR_KV, MOTOR_L);
+// BLDCMotor motor = BLDCMotor(MOTOR_POLES);
 BLDCDriver6PWM driver = BLDCDriver6PWM(H1, L1, H2, L2, H3, L3, EN_GATE);
 LowsideCurrentSense current_sense  = LowsideCurrentSense(CURRENT_SENSE_SHUNT, CURRENT_SENSE_GAIN, BR_SO1, BR_SO2);
 
@@ -88,7 +89,7 @@ void setup()
   motor.P_angle.P = 2;
 
   motor.controller = MotionControlType::torque;
-  motor.torque_controller = TorqueControlType::voltage; // Torque control type
+  // motor.torque_controller = TorqueControlType::voltage; // Torque control type
 
   // current_sense.linkDriver(&driver);
 
@@ -143,10 +144,13 @@ void loop()
     motor.loopFOC();
     motor.move(target);
 
-    Serial6.print("Vesc Active, target torque: ");
-    Serial6.println(target);
+    // Serial6.print("Vesc Active, target torque: ");
+    // Serial6.println(target);
   }
   else{
+    // motor.loopFOC();
+    // motor.move(0);
+
     Serial6.print("Input voltage: ");
     Serial6.print(analogRead(MOTOR_EN));
     Serial6.println("; Motor disabled");
